@@ -29,4 +29,4 @@ class CfUrlOutput(Output):
     def __init__(self, cf_name):
         value = join('//', get_attr(cf_name, 'Domain'))
         description = 'The public url of %s' % cf_name
-        super(ElbUrlOutput, self).__init__('CloudFront_Url', description, value)
+        super(CfUrlOutput, self).__init__('CloudFront_Url', description, value)
