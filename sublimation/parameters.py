@@ -24,98 +24,40 @@ class Parameter(TemplateNode):
             self.data[name]['ConstraintDescription'] = constraint_description
 
 
-
-def parameter(name, type, description, default=None):
-    """
-    Creates a new parameter named `name` of type `type` described by `description`.
-    """
-
-    output = {
-        "Description": description,
-        "Type": type,
-    }
-
-    if default is not None:
-        output['Default'] = default
-
-    return {
-        name: output,
-    }
+class KeyPairParameter(Parameter):
+    def __init__(self, name=None):
+        name = name if name is not None else 'KeyName'
+        super(KeyPairParameter, self).__init__(name, 'Name of the EC2 KeyPair to enable SSH access to the instances.')
 
 
-def key_pair_existing():
-    """
-    Parameter named 'KeyName' that references an existing EC2 Key Pair.
-    """
-
-    return {
-        "KeyName": {
-            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
-            "Type": "String",
-        }
-    }
+class SecurityGroupParameter(Parameter):
+    def __init__(self, name=None):
+        name = name if name is not None else 'SecurityGroupName'
+        super(SecurityGroupParameter, self).__init__(name, 'Name of the EC2 Security Group to include the instance in.')
 
 
-def security_group_existing(name=None):
-    """
-    Parameter named `name` (default is 'SecurityGroupName') that references an existing EC2 Security Group.
-    """
+class InstanceTypeParamater(Parameter):
+    def __init__(self, name=None, default='m1.small'):
+        name = name if name is not None else 'InstanceType'
+        all_instance_types = [
+            "t1.micro",
+            "m1.small",
+            "m1.medium",
+            "m1.large",
+            "m1.xlarge",
+            "m2.xlarge",
+            "m2.2xlarge",
+            "m2.4xlarge",
+            "m3.xlarge",
+            "m3.2xlarge",
+            "c1.medium",
+            "c1.xlarge",
+            "cc1.4xlarge",
+            "cc2.8xlarge",
+            "cg1.4xlarge",
+        ]
 
-    name = name if name is not None else 'SecurityGroupName'
-
-    return {
-        name: {
-            "Description": "Name of an existing EC2 Security Group to include the instance in",
-            "Type": "String",
-        },
-    }
-
-
-def security_group_new(name=None):
-    """
-    Parameter named `name` (default is 'SecurityGroupName') used to create a new EC2 Security Group.
-    """
-
-    name = name if name is not None else 'SecurityGroupName'
-
-    return {
-        name: {
-            "Description": "Name of a new EC2 Security Group to create instances in",
-            "Type": "String",
-        },
-    }
-
-
-def instance_type_any(name=None, description=None):
-    """
-    Parameter named `name` (default is 'InstanceType') that can be any EC2 instance type.
-    """
-
-    name = name if name is not None else 'InstanceType'
-    description = description if description is not None else 'The EC2 instance type'
-
-    return {
-        name: {
-            "Description": description,
-            "Type": "String",
-            "Default": "m1.small",
-            "AllowedValues": [
-                "t1.micro",
-                "m1.small",
-                "m1.medium",
-                "m1.large",
-                "m1.xlarge",
-                "m2.xlarge",
-                "m2.2xlarge",
-                "m2.4xlarge",
-                "m3.xlarge",
-                "m3.2xlarge",
-                "c1.medium",
-                "c1.xlarge",
-                "cc1.4xlarge",
-                "cc2.8xlarge",
-                "cg1.4xlarge"
-            ],
-            "ConstraintDescription": "Must be a valid EC2 instance type."
-        }
-    }
+        super(InstanceTypeParamater, self).__init__(name, 'The EC2 instance type',
+                                                    default=default,
+                                                    allowed_values=all_instance_types,
+                                                    constraint_description='Must be a valid EC2 instance type')
