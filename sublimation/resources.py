@@ -2,10 +2,20 @@
 Constructors for various possible resources.
 """
 
-__all__ = ['resource', 'topic', 'alert_autoscale_cpu_high', 'instance']
-
-
 from .helpers import join, ref
+from .templates import TemplateNode, RESOURCES_FIELD
+
+
+class Resource(TemplateNode):
+    belongs_in = RESOURCES_FIELD
+
+    def __init__(self, name, cf_type, properties):
+        self.data = {
+            name: {
+                'Type': cf_type,
+                'Properties': properties,
+            }
+        }
 
 
 def resource(name, cf_type, properties):

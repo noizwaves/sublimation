@@ -2,7 +2,27 @@
 Useful parameters.
 """
 
-__all__ = ['parameter', 'key_pair_existing', 'security_group_existing', 'security_group_new', 'instance_type_any']
+from .templates import TemplateNode, PARAMETERS_FIELD
+
+
+class Parameter(TemplateNode):
+    belongs_in = PARAMETERS_FIELD
+
+    def __init__(self, name, description, type='String', default=None, allowed_values=None, constraint_description=None):
+        self.data = {
+            name: {
+                'Description': description,
+                'Type': type,
+            }
+        }
+
+        if default is not None:
+            self.data[name]['Default'] = default
+        if allowed_values is not None:
+            self.data[name]['AllowedValues'] = allowed_values
+        if constraint_description is not None:
+            self.data[name]['ConstraintDescription'] = constraint_description
+
 
 
 def parameter(name, type, description, default=None):

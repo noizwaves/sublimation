@@ -2,10 +2,20 @@
 Useful outputs.
 """
 
-__all__ = ['output', 'output_elb_url', 'output_cf_url']
-
-
 from .helpers import join, get_attr
+from .templates import TemplateNode, OUTPUTS_FIELD
+
+
+class Output(TemplateNode):
+    belongs_in = OUTPUTS_FIELD
+
+    def __init__(self, name, description, value):
+        self.data = {
+            name: {
+                'Description': description,
+                'Value': value,
+            }
+        }
 
 
 def output(name, description, value):

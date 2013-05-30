@@ -2,9 +2,6 @@
 Methods for loading data.
 """
 
-__all__ = ['is_bash_useful', 'load_template', 'load_script']
-
-
 from json import loads
 
 

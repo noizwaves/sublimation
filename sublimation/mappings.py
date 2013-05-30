@@ -2,7 +2,16 @@
 Useful preset mappings for various things.
 """
 
-__all__ = ['map_instance_type_to_arch_64bit', 'map_region_to_ami_ubuntu_12_04_2']
+from .templates import TemplateNode, MAPPINGS_FILED
+
+
+class Mapping(TemplateNode):
+    belongs_in = MAPPINGS_FILED
+
+    def __init__(self, name, mapping):
+        self.data = {
+            name: mapping,
+        }
 
 
 def map_instance_type_to_arch_64bit():
