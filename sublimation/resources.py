@@ -41,13 +41,95 @@ class Instance(Resource):
             'ImageId': image_id,
             'InstanceType': instance_type,
             'KeyName': key_name,
-            'SecurityGroups': security_groups,
+            'SecurityGroups': security_groups,  # TODO: ensure a list
         }
 
         if user_data is not None:
             properties['UserData'] = user_data
 
         super(Instance, self).__init__(name, self.cf_type, properties)
+
+
+class AutoScalingGroup(Resource):
+    cf_type = 'AWS::AutoScaling::AutoScalingGroup'
+
+    def __init__(self, name, launch_config, azs, min_size, max_size, desired_capacity, load_balancers):
+        properties = {
+            'AvailabilityZones': azs,
+            'LaunchConfigurationName': launch_config,
+            'MinSize': min_size,  # TODO: ensure a string
+            'MaxSize': max_size,  # TODO: ensure a string
+            'DesiredCapacity': desired_capacity,  # TODO: ensure a string
+            'LoadBalancerName': load_balancers,  # TODO: ensure a list
+        }
+
+        super(AutoScalingGroup, self).__init__(name, self.cf_type, properties)
+
+
+class LaunchConfiguration(Resource):
+    cf_type = 'AWS::AutoScaling::LaunchConfiguration'
+
+    def __init__(self, name, image_id, instance_type, security_groups, user_data=None):
+        properties = {
+            'ImageId': image_id,
+            'SecurityGroups': security_groups,  # TODO: ensure a list
+            'InstanceType': instance_type,
+        }
+
+        if user_data is not None:
+            properties['UserData'] = user_data
+
+        super(LaunchConfiguration, self).__init__(name, self.cf_type, properties)
+
+
+class SecurityGroup(Resource):
+    cf_type = 'AWS::EC2::SecurityGroup'
+
+    def __init__(self, name, description, ingress):
+        properties = {
+            'GroupDescription': description,
+            'SecurityGroupIngress': ingress,  # TODO: ensure a list
+        }
+
+        super(SecurityGroup, self).__init__(name, self.cf_type, properties)
+
+
+class LoadBalancer(Resource):
+    cf_type = 'AWS::ElasticLoadBalancing::LoadBalancer'
+
+    def __init__(self, name, azs, listeners, target, healthy_threshold=10, unhealthy_threshold=2,
+                 interval=30, timeout=5):
+        properties = {
+            'AvailabilityZones': azs,
+            'Listeners': listeners,  # TODO: ensure list
+            'HealthCheck': {
+                'Target': target,
+                'HealthyThreshold': healthy_threshold,  # TODO: ensure string
+                'UnhealthyThreshold': unhealthy_threshold,  # TODO: ensure string
+                'Interval': interval,  # TODO: ensure string
+                'Timeout': timeout,  # TODO: ensure string
+            }
+        }
+
+        super(LoadBalancer, self).__init__(name, self.cf_type, properties)
+
+
+class Distribution(Resource):
+    cf_type = 'AWS::CloudFront::Distribution'
+
+    def __init__(self, name, comment, enabled, origins, default_cache_behavior):
+        distribution_config = {
+            'Comment': 'Caches static files served through the ELB.',
+            'Enabled': True,
+            'Origins': origins,  # TODO: ensure list
+            'DefaultCacheBehavior': default_cache_behavior,
+        }
+
+        properties = {
+            'DistributionConfig': distribution_config,
+        }
+
+        super(Distribution, self).__init__(name, self.cf_type, properties)
 
 
 class AutoscaleCpuHighAlarm(Resource):
