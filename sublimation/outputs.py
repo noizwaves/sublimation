@@ -18,22 +18,15 @@ class Output(TemplateNode):
         }
 
 
-def output(name, description, value):
-    """
-    Defines an output called `name` with description `description` of value `value`.
-    """
-
-    return {
-        name: {
-            'Description': description,
-            'Value': value,
-        }
-    }
+class ElbUrlOutput(Output):
+    def __init__(self, elb_name):
+        value = join('http://', get_attr(elb_name, 'DNSName'))
+        description = 'The public url of %s' % elb_name
+        super(ElbUrlOutput, self).__init__('ELB_Url', description, value)
 
 
-def output_elb_url(elb_name):
-    return output('ELB_Url', 'The public url of %s' % elb_name, join('http://', get_attr(elb_name, 'DNSName')))
-
-
-def output_cf_url(cf_name):
-    return output('CloudFront_Url', 'The public url of %s' % cf_name, join('//', get_attr(cf_name, 'Domain')))
+class CfUrlOutput(Output):
+    def __init__(self, cf_name):
+        value = join('//', get_attr(cf_name, 'Domain'))
+        description = 'The public url of %s' % cf_name
+        super(ElbUrlOutput, self).__init__('CloudFront_Url', description, value)
